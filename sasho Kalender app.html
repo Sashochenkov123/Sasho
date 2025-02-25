@@ -1,0 +1,127 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalender-App mit Alarm</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #9face6);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+    h1 {
+      text-align: center;
+      color: #4a90e2;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: bold;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #4a90e2;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #357ABD;
+    }
+    .alarm {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 18px;
+      color: #e74c3c;
+    }
+    .event-list {
+      margin-top: 20px;
+    }
+    .event-item {
+      background: #f9f9f9;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Kalender-App mit Alarm</h1>
+    <label for="event">Termin eintragen:</label>
+    <input type="text" id="event" placeholder="Gib deinen Termin ein">
+    <label for="datetime">Datum und Uhrzeit wählen:</label>
+    <input type="datetime-local" id="datetime">
+    <button onclick="addEvent()">Termin speichern</button>
+    <div class="event-list" id="event-list"></div>
+  </div>
+  
+  <audio id="alarm-sound" src="https://www.soundjay.com/button/beep-07.mp3" preload="auto"></audio>
+  
+  <script>
+    let events = [];
+
+    function addEvent() {
+      const event = document.getElementById('event').value;
+      const datetime = document.getElementById('datetime').value;
+      const eventList = document.getElementById('event-list');
+      const alarmSound = document.getElementById('alarm-sound');
+
+      if (!event || !datetime) {
+        alert('Bitte fülle alle Felder aus!');
+        return;
+      }
+
+      const eventTime = new Date(datetime).getTime();
+      const currentTime = new Date().getTime();
+      const timeToAlarm = eventTime - currentTime;
+
+      if (timeToAlarm <= 0) {
+        alert('Das Datum muss in der Zukunft liegen!');
+        return;
+      }
+
+      events.push({ event, datetime });
+      displayEvents();
+
+      setTimeout(() => {
+        alarmSound.play();
+        alert(`🔔 Dein Termin "${event}" ist jetzt!`);
+      }, timeToAlarm);
+    }
+
+    function displayEvents() {
+      const eventList = document.getElementById('event-list');
+      eventList.innerHTML = '';
+      events.forEach((e, index) => {
+        const eventItem = document.createElement('div');
+        eventItem.className = 'event-item';
+        eventItem.innerHTML = `<strong>Termin:</strong> ${e.event} <br> <strong>Datum:</strong> ${e.datetime}`;
+        eventList.appendChild(eventItem);
+      });
+    }
+  </script>
+</body>
+</html>
